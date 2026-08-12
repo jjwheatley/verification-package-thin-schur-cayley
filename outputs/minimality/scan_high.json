@@ -1,0 +1,1 @@
+[{"dims": [3, 9], "configs": 8191, "connected_tested": 8134, "failures": [], "seconds": 18.0}, {"dims": [3, 3, 3], "configs": 8191, "connected_tested": 8035, "failures": [], "seconds": 7.9}, {"dims": [2, 14], "configs": 32767, "connected_tested": 32396, "failures": [], "seconds": 90.8}]
