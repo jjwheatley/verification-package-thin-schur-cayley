@@ -94,7 +94,8 @@ by generator images, then canonicalise each failing connection set under them.
 - `scan_minimality.py` — exhaustive scans over all inverse-closed connection
   sets of a given abelian group.
 - `verify.py` — the verification script described above.
-
+- `The general counterexamples` — (34, 38, 42 vertices): K = 120, 156, 97 with
+  dim TS one less in each case, and the stall certificate verified directly.
 ## Citing
 
 See `CITATION.cff`, or the "Cite this repository" link on the repository page.
