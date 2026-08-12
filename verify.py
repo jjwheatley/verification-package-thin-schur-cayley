@@ -225,6 +225,22 @@ allok &= ok(len(viol) == 9 and {c2 for _, _, c2 in viol} == merged and
 coh, ts = closures(dims, S1)
 allok &= ok(coh.max()+1 == 13 and ts.max()+1 == 12, 'group-level closures agree on census instance')
 
+# ---- the general counterexamples (34, 38, 42 vertices), certified here ----
+from certificates import classes as _classes, cert_check, merged_pair
+BASES = {34: ([(0,1),(0,4),(1,2),(1,3),(1,4),(2,3),(3,4)], 5, 120),
+         38: ([(0,1),(0,2),(0,5),(1,2),(1,3),(1,4),(3,4),(4,5)], 6, 156),
+         42: ([(0,1),(0,2),(0,5),(0,6),(1,4),(2,3),(3,4),(3,6),(4,5)], 7, 97)}
+for nexp, (edges, nv, Kexp) in BASES.items():
+    Ac, verts = cfi(edges, nv)
+    gc = wl2(Ac); lc = ts_partition(Ac); Kc = gc.max()+1
+    mp = merged_pair(Ac, verts)
+    ids = [i[0] for i in mp[0]]
+    cert = cert_check(Ac, [(ids[0], ids[1])])
+    cOK = (cert['mult_closed'] and cert['transpose_closed'] and cert['IAJ']
+           and cert['coherence_violations'] > 0)
+    allok &= ok(bool(Ac.shape[0] == nexp and Kc == Kexp and lc.max()+1 == Kc-1 and cOK),
+                f'general counterexample n={nexp}: K={Kc}, dimTS={Kc-1}, stall certified')
+
 # ---- level-<=2 separation across the corpus (sec on the level hierarchy) ----
 import networkx as nx
 from networkx.generators.atlas import graph_atlas_g
