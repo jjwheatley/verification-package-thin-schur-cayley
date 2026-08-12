@@ -18,8 +18,8 @@ repository-code: "https://github.com/jjwheatley/verification-package-thin-schur-
 url: "https://github.com/jjwheatley/verification-package-thin-schur-cayley"
 doi: "10.5281/zenodo.21897425"
 license: MIT
-version: "1.0.0"
-date-released: "2026-08-10"
+version: "1.0.1"
+date-released: "2026-08-12"
 keywords:
   - Weisfeiler-Leman
   - coherent configurations
