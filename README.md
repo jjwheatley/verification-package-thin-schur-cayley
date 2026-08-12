@@ -3,7 +3,7 @@
 Computational companion to *Thin-Schur closures of Cayley graphs: positive
 circulant regimes, a minimal abelian counterexample, and its census*.
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21841858.svg)](https://doi.org/10.5281/zenodo.21841858)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21897425.svg)](https://doi.org/10.5281/zenodo.21897425)
 
 Every computational claim in the paper is reproduced here, in exact
 arithmetic: integer matrix products throughout, ranks computed independently
