@@ -1,6 +1,6 @@
 # Verification code
 
-Computational companion to *Thin-Schur closures of Cayley graphs: positive
+Computational companion to *Arc-Schur closures of Cayley graphs: positive
 circulant regimes, a minimal abelian counterexample, and its census*.
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21841858.svg)](https://doi.org/10.5281/zenodo.21841858)
@@ -40,7 +40,7 @@ fails. A successful run ends with `ALL CHECKS PASSED`.
 - **The Bannai-Muzychuk cardinality gap** on C24(1,5), in exact cyclotomic
   arithmetic: dim T = 7 but |Lambda| = 9, and the dual-side algebra has
   dimension 9, so the candidate fusion is not one.
-- **The counterexample** over Z4 x Z8: K = 13, dim TS = 12, and the stall
+- **The counterexample** over Z4 x Z8: K = 13, dim AS = 12, and the stall
   certificate verified directly on the fused partition.
 - **The nine structure-constant violations**: exactly nine, all on the merged
   block, arising from three blocks.
@@ -48,8 +48,10 @@ fails. A successful run ends with `ALL CHECKS PASSED`.
   coherent classes.
 - **The arc algebra fails to separate**: dim T = 11, equal profiles on the
   merged pair.
-- **Arc rigidity is refuted**: a 10-regular census instance merging two thin
+- **Arc rigidity is refuted**: a 10-regular census instance merging two arc
   classes, certified.
+- **Appendix claims**: every block of the fused partition is self-inverse, and
+  the stabiliser of the identity in Aut(G) is Klein four of order 4.
 - **Level-<=2 separation** across the atlas corpus and the CFI closures over
   K4, K3,3 and the prism.
 - **Agreement** between the group-level and matrix-level closures.
@@ -60,8 +62,8 @@ The two exhaustive computations are recorded under `outputs/`, so the counts
 can be checked without rerunning them. Each JSON records, per group, the
 number of connected instances tested and every failure found.
 
-- `outputs/minimality/` — all 44 abelian groups of order below 32, summing to
-  259,469 connected instances with no failures.
+- `outputs/minimality/` — all 45 abelian groups of order below 32, summing to
+  259,473 connected instances with no failures.
 - `outputs/census/` — Z4 x Z8 alone, summing to 129,600 connected instances
   with 512 counterexamples.
 
@@ -95,7 +97,14 @@ by generator images, then canonicalise each failing connection set under them.
   sets of a given abelian group.
 - `verify.py` — the verification script described above.
 - `The general counterexamples` — (34, 38, 42 vertices): K = 120, 156, 97 with
-  dim TS one less in each case, and the stall certificate verified directly.
+  dim AS one less in each case, and the stall certificate verified directly.
+## A note on the repository name
+
+The repository was created while the closure was called the *thin-Schur*
+closure. The paper now says *arc-Schur*, to avoid a collision with the
+standard meaning of "thin" in association-scheme theory (valency 1). The name
+is retained so that the archived DOI and its links continue to resolve.
+
 ## Citing
 
 See `CITATION.cff`, or the "Cite this repository" link on the repository page.

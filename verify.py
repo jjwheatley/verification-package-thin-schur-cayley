@@ -273,5 +273,35 @@ for name, A_ in [('K4', cfi(list(nx.complete_graph(4).edges()), 4)[0]),
                  ('prism', cfi(list(nx.circular_ladder_graph(3).edges()), 6)[0])]:
     allok &= ok(level2_separates(A_), f'level-<=2 separation on CFI({name}) closure')
 
+# ---- appendix claims: blocks self-inverse; stabiliser is Klein four ----
+els4 = [(a, b) for a in range(4) for b in range(8)]
+APPENDIX_BLOCKS = [
+    [(0,0)], [(0,1),(0,3),(0,5),(0,7)], [(0,2),(0,6),(2,0),(2,4)], [(0,4)],
+    [(1,0),(1,6),(3,0),(3,2)], [(1,1),(3,7)], [(1,2),(1,4),(3,4),(3,6)],
+    [(1,3),(1,7),(3,1),(3,5)], [(1,5),(3,3)], [(2,1),(2,7)], [(2,2),(2,6)],
+    [(2,3),(2,5)]]
+neg4 = lambda e: ((-e[0]) % 4, (-e[1]) % 8)
+allok &= ok(all(sorted(map(neg4, B)) == sorted(B) for B in APPENDIX_BLOCKS),
+            'appendix: every block of the fused partition is self-inverse')
+Sset0 = set(S0)
+stab = []
+for a in els4:
+    if a[1] % 2: continue
+    for b in els4:
+        img = {}
+        for x, y in els4:
+            img[(x, y)] = ((a[0]*x + b[0]*y) % 4, (a[1]*x + b[1]*y) % 8)
+        if len(set(img.values())) != n: continue
+        if {img[s] for s in S0} == Sset0: stab.append(img)
+nontriv = [m for m in stab if any(m[e] != e for e in els4)]
+orders = set()
+for m in nontriv:
+    o, cur = 1, m
+    while any(cur[e] != e for e in els4):
+        cur = {e: m[cur[e]] for e in els4}; o += 1
+    orders.add(o)
+allok &= ok(len(stab) == 4 and orders == {2},
+            f'rem:schurian: stabiliser has order {len(stab)}, all non-identity elements of order 2 (Klein four)')
+
 print('\nALL CHECKS PASSED' if allok else '\n*** SOME CHECKS FAILED')
 sys.exit(0 if allok else 1)

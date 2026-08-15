@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-title: "Verification code: thin-Schur closures of Cayley graphs"
+title: "Verification code: arc-Schur closures of Cayley graphs"
 abstract: >-
-  Exact-arithmetic verification code for the paper "Thin-Schur closures of
+  Exact-arithmetic verification code for the paper "Arc-Schur closures of
   Cayley graphs: positive circulant regimes, a minimal abelian counterexample,
   and its census". Reproduces every computational claim in the paper: the
   positive walk-separation results, the wedge witnesses, the Bannai-Muzychuk
@@ -18,8 +18,8 @@ repository-code: "https://github.com/jjwheatley/verification-package-thin-schur-
 url: "https://github.com/jjwheatley/verification-package-thin-schur-cayley"
 doi: "10.5281/zenodo.21897425"
 license: MIT
-version: "1.1.0"
-date-released: "2026-08-12"
+version: "1.2.0"
+date-released: "2026-08-14"
 keywords:
   - Weisfeiler-Leman
   - coherent configurations
