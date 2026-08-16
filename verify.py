@@ -303,5 +303,60 @@ for m in nontriv:
 allok &= ok(len(stab) == 4 and orders == {2},
             f'rem:schurian: stabiliser has order {len(stab)}, all non-identity elements of order 2 (Klein four)')
 
+# ---- across-layer eigenvalue coincidences (Section 5) ----
+# Exhaustive over connected circulants with 4 <= n <= NMAX; the paper's claim
+# is for NMAX = 24 (12,043 circulants, 3,946 with a coincidence).  Exact test:
+# lambda_a is the coefficient vector of sum x^(as) reduced mod the n-th
+# cyclotomic polynomial; equality of lambdas is equality of those vectors.
+try:
+    import sympy
+    from math import gcd as _gcd
+    NMAX = 24 if '--full' in sys.argv else 14
+    xs = sympy.symbols('x')
+    tot = coin = 0
+    for m in range(4, NMAX + 1):
+        Phi = sympy.Poly(sympy.cyclotomic_poly(m, xs), xs)
+        half = list(range(1, m // 2 + 1))
+        for r in range(1, len(half) + 1):
+            for gens in itertools.combinations(half, r):
+                Sc = sorted({g % m for g in gens} | {(-g) % m for g in gens})
+                Ac = np.zeros((m, m), dtype=np.int64)
+                for i2 in range(m):
+                    for sc in Sc: Ac[i2, (i2 + sc) % m] = 1
+                if not nx.is_connected(nx.from_numpy_array(Ac)): continue
+                tot += 1
+                buckets = {}
+                for a2 in range(m):
+                    v = [0] * m
+                    for sc in Sc: v[(a2 * sc) % m] += 1
+                    key = tuple(sympy.rem(sympy.Poly(list(reversed(v)), xs), Phi).all_coeffs())
+                    buckets.setdefault(key, []).append(a2)
+                if any(len({_gcd(a2, m) for a2 in ids}) > 1 for ids in buckets.values()):
+                    coin += 1
+    if NMAX == 24:
+        allok &= ok(tot == 12043 and coin == 3946,
+                    f'across-layer coincidences: {coin} of {tot} connected circulants, 4<=n<=24')
+    else:
+        allok &= ok(tot > 0 and coin > 0,
+                    f'across-layer coincidences: {coin} of {tot} connected circulants, 4<=n<={NMAX}'
+                    ' (pass --full for the paper\'s 4<=n<=24 figures)')
+except ImportError:
+    print('SKIP  across-layer coincidence scan (sympy not installed)')
+
+# ---- wedge-degree witnesses: r_3 constant on arcs, r_2 separating ----
+for m, gens, r3v, r2v in [(12, [1, 4, 5], 21, {2, 3}), (18, [2, 3, 4, 8], 39, {3, 0})]:
+    Ac = np.zeros((m, m), dtype=np.int64)
+    for i2 in range(m):
+        for gg in gens: Ac[i2, (i2 + gg) % m] = 1; Ac[i2, (i2 - gg) % m] = 1
+    gc = wl2(Ac)
+    rp = {}
+    for y2 in range(m): rp.setdefault(int(gc[0, y2]), y2)
+    arcs2 = [c2 for c2, y2 in rp.items() if Ac[0, y2]]
+    r3 = Ac * np.linalg.matrix_power(Ac, 3)
+    r2 = Ac * np.linalg.matrix_power(Ac, 2)
+    allok &= ok(len(arcs2) == 2 and np.array_equal(r3, r3v * Ac)
+                and {int(r2[0, rp[c2]]) for c2 in arcs2} == r2v,
+                f'rem:wedgedegree C{m}{tuple(gens)}: r_3 = {r3v}A on arcs, r_2 separates')
+
 print('\nALL CHECKS PASSED' if allok else '\n*** SOME CHECKS FAILED')
 sys.exit(0 if allok else 1)

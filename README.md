@@ -13,14 +13,15 @@ floating-point comparison.
 
 ## Requirements
 
-Python 3.10 or later, numpy, networkx; nothing else.
+Python 3.10 or later, numpy, networkx and sympy.
 
     pip install -r requirements.txt
 
 ## Running it
 
-    python verify.py           # ~4-5 minutes
-    python verify.py --full    # adds the complete 995-graph atlas sweep
+    python verify.py           # ~5 minutes
+    python verify.py --full    # adds the complete 995-graph atlas sweep and
+                               # the full 4 <= n <= 24 eigenvalue scan (~20 min)
 
 The script prints a PASS or FAIL line for every claim and exits nonzero if any
 fails. A successful run ends with `ALL CHECKS PASSED`.
@@ -52,6 +53,12 @@ fails. A successful run ends with `ALL CHECKS PASSED`.
   classes, certified.
 - **Appendix claims**: every block of the fused partition is self-inverse, and
   the stabiliser of the identity in Aut(G) is Klein four of order 4.
+- **Across-layer eigenvalue coincidences**: exhaustively over the 12,043
+  connected circulants with 4 <= n <= 24, exactly 3,946 have two eigenvalues
+  with lambda_a = lambda_b but gcd(a,n) != gcd(b,n). Requires `--full`; the
+  default run uses the smaller range 4 <= n <= 14.
+- **The wedge-degree witnesses**: on C_12(1,4,5) and C_18(2,3,4,8), r_3 is a
+  multiple of A on the arc classes (21A and 39A) while r_2 separates them.
 - **Level-<=2 separation** across the atlas corpus and the CFI closures over
   K4, K3,3 and the prism.
 - **Agreement** between the group-level and matrix-level closures.
