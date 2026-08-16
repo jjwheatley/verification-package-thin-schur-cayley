@@ -343,6 +343,67 @@ try:
 except ImportError:
     print('SKIP  across-layer coincidence scan (sympy not installed)')
 
+# ---- smallest across-layer instances (Section 5): K_4, then C_6(1,3), C_6(1,2) ----
+try:
+    import sympy
+    from math import gcd as _gcd
+    xs2 = sympy.symbols('x')
+    def _has_coincidence(m, Sc):
+        Phi = sympy.Poly(sympy.cyclotomic_poly(m, xs2), xs2)
+        b = {}
+        for a2 in range(m):
+            v = [0] * m
+            for sc in Sc: v[(a2 * sc) % m] += 1
+            b.setdefault(tuple(sympy.rem(sympy.Poly(list(reversed(v)), xs2), Phi).all_coeffs()),
+                         []).append(a2)
+        return any(len({_gcd(a2, m) for a2 in ids}) > 1 for ids in b.values())
+    hits = []
+    for m in (4, 5, 6):
+        half = list(range(1, m // 2 + 1))
+        for r in range(1, len(half) + 1):
+            for gens in itertools.combinations(half, r):
+                Sc = sorted({g % m for g in gens} | {(-g) % m for g in gens})
+                Ac = np.zeros((m, m), dtype=np.int64)
+                for i2 in range(m):
+                    for sc in Sc: Ac[i2, (i2 + sc) % m] = 1
+                if not nx.is_connected(nx.from_numpy_array(Ac)): continue
+                if _has_coincidence(m, Sc):
+                    hits.append((m, tuple(gens), len(Sc) == m - 1))
+    smallest = hits[0] if hits else None
+    noncomplete = [h for h in hits if not h[2]]
+    allok &= ok(smallest == (4, (1, 2), True)
+                and sorted(h[1] for h in noncomplete)[:2] == [(1, 2), (1, 3)]
+                and all(h[0] == 6 for h in noncomplete),
+                'smallest across-layer instance is K_4 = C_4(1,2); smallest '
+                'non-complete are C_6(1,3) and C_6(1,2)')
+except ImportError:
+    print('SKIP  smallest across-layer instances (sympy not installed)')
+
+# ---- cor:lower is vacuous on abelian Cayley graphs (rem:lowerwitness) ----
+import random as _rnd
+_rnd.seed(0)
+bad = 0; seen = 0
+for dims in [(4, 8), (16,), (2, 2, 4), (3, 9), (24,)]:
+    els2 = list(itertools.product(*[range(d) for d in dims]))
+    idx2 = {e: i for i, e in enumerate(els2)}
+    nz = [e for e in els2 if any(e)]
+    negf = lambda e: tuple((-a) % d for a, d in zip(e, dims))
+    for _ in range(8):
+        k = _rnd.randint(1, max(1, len(nz) // 2))
+        Ss = set()
+        for e in _rnd.sample(nz, k): Ss.add(e); Ss.add(negf(e))
+        N = len(els2)
+        Ac = np.zeros((N, N), dtype=np.int64)
+        for i2, xx in enumerate(els2):
+            for sc in Ss:
+                Ac[i2, idx2[tuple((a + b) % d for a, b, d in zip(xx, sc, dims))]] = 1
+        if not nx.is_connected(nx.from_numpy_array(Ac)): continue
+        seen += 1
+        gg = wl2(Ac)
+        if (gg != gg.T).any(): bad += 1
+allok &= ok(seen > 0 and bad == 0,
+            f'rem:lowerwitness: all coherent classes symmetric on {seen} abelian Cayley instances')
+
 # ---- wedge-degree witnesses: r_3 constant on arcs, r_2 separating ----
 for m, gens, r3v, r2v in [(12, [1, 4, 5], 21, {2, 3}), (18, [2, 3, 4, 8], 39, {3, 0})]:
     Ac = np.zeros((m, m), dtype=np.int64)

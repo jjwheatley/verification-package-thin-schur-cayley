@@ -57,6 +57,10 @@ fails. A successful run ends with `ALL CHECKS PASSED`.
   connected circulants with 4 <= n <= 24, exactly 3,946 have two eigenvalues
   with lambda_a = lambda_b but gcd(a,n) != gcd(b,n). Requires `--full`; the
   default run uses the smaller range 4 <= n <= 14.
+- **The smallest across-layer instances**: K_4 = C_4(1,2), and the smallest
+  non-complete ones C_6(1,3) = K_{3,3} and C_6(1,2).
+- **cor:lower is vacuous on abelian Cayley graphs**: every coherent class is
+  symmetric across a sample of connected abelian Cayley instances.
 - **The wedge-degree witnesses**: on C_12(1,4,5) and C_18(2,3,4,8), r_3 is a
   multiple of A on the arc classes (21A and 39A) while r_2 separates them.
 - **Level-<=2 separation** across the atlas corpus and the CFI closures over
