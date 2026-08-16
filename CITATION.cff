@@ -16,7 +16,10 @@ authors:
     country: NL
 repository-code: "https://github.com/jjwheatley/verification-package-thin-schur-cayley"
 url: "https://github.com/jjwheatley/verification-package-thin-schur-cayley"
-doi: "10.5281/zenodo.21897425"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21897425
+    description: "Concept DOI for all versions of this software"
 license: MIT
 version: "1.4.0"
 date-released: "2026-08-16"
