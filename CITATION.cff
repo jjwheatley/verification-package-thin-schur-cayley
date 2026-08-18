@@ -21,7 +21,7 @@ identifiers:
     value: 10.5281/zenodo.21897425
     description: "Concept DOI for all versions of this software"
 license: MIT
-version: "1.4.3"
+version: "1.4.4"
 date-released: "2026-08-16"
 keywords:
   - Weisfeiler-Leman

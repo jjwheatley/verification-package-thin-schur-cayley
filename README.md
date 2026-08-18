@@ -57,6 +57,12 @@ fails. A successful run ends with `ALL CHECKS PASSED`.
   connected circulants with 4 <= n <= 24, exactly 3,946 have two eigenvalues
   with lambda_a = lambda_b but gcd(a,n) != gcd(b,n). Requires `--full`; the
   default run uses the smaller range 4 <= n <= 14.
+- **The minimal wedge witness** C_20(2,4,5): three arc classes, r_2 separates
+  them (weights 0, 1, 2) while r_3 does not, and AS = Coh.
+- **The generalised weighted-adjacency mechanism**: the weights are pairwise
+  distinct and the Vandermonde system inverts for t = 3 classes.
+- **The minimal degenerate cyclotomic witness** C_10(1,2).
+- **Z_4 x Z_4**: all 432 connected instances satisfy the identity.
 - **The smallest across-layer instances**: K_4 = C_4(1,2), and the smallest
   non-complete ones C_6(1,3) = K_{3,3} and C_6(1,2).
 - **cor:lower is vacuous on abelian Cayley graphs**: every coherent class is

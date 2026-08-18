@@ -419,5 +419,76 @@ for m, gens, r3v, r2v in [(12, [1, 4, 5], 21, {2, 3}), (18, [2, 3, 4, 8], 39, {3
                 and {int(r2[0, rp[c2]]) for c2 in arcs2} == r2v,
                 f'rem:wedgedegree C{m}{tuple(gens)}: r_3 = {r3v}A on arcs, r_2 separates')
 
+# ---- prop:strict minimal witness C_20(2,4,5): 3 arc classes, r_2 separates, r_3 does not ----
+m = 20; Sw = [2, 4, 5, 15, 16, 18]
+Aw = np.zeros((m, m), dtype=np.int64)
+for i2 in range(m):
+    for sc in Sw: Aw[i2, (i2 + sc) % m] = 1
+gw = wl2(Aw); lw = ts_partition(Aw)
+rw = {}
+for y2 in range(m): rw.setdefault(int(gw[0, y2]), y2)
+arcw = [c2 for c2, y2 in rw.items() if Aw[0, y2]]
+r2w = [int((Aw * np.linalg.matrix_power(Aw, 2))[0, rw[c2]]) for c2 in arcw]
+r3w = [int((Aw * np.linalg.matrix_power(Aw, 3))[0, rw[c2]]) for c2 in arcw]
+allok &= ok(len(arcw) == 3 and sorted(r2w) == [0, 1, 2] and sorted(r3w) == [15, 15, 16]
+            and gw.max() == lw.max(),
+            f'prop:strict minimal witness C_20(2,4,5): 3 arc classes, r_2={sorted(r2w)} separates, '
+            f'r_3={sorted(r3w)} does not, AS=Coh')
+
+# ---- prop:wa generalised: Vandermonde recovery with t classes ----
+Mw = Aw * np.linalg.matrix_power(Aw, 2)
+wts = [int(Mw[0, rw[c2]]) for c2 in arcw]
+V = np.array([[1] * len(arcw)] + [[w ** j for w in wts] for j in range(1, len(arcw))], dtype=float)
+allok &= ok(len(set(wts)) == len(wts) and abs(np.linalg.det(V)) > 1e-9,
+            f'prop:wa: weights {sorted(wts)} pairwise distinct, Vandermonde system inverts (t={len(arcw)})')
+
+# ---- rem:degencyc minimal degenerate cyclotomic witness C_10(1,2) ----
+m = 10; Sd = sorted({g % m for g in (1, 2)} | {(-g) % m for g in (1, 2)})
+Ad = np.zeros((m, m), dtype=np.int64)
+for i2 in range(m):
+    for sc in Sd: Ad[i2, (i2 + sc) % m] = 1
+gd = wl2(Ad); Kd = gd.max() + 1
+zz = np.exp(2j * np.pi / m)
+evd = [complex(sum(zz ** ((a2 * sc) % m) for sc in Sd)) for a2 in range(m)]
+rounded = [complex(round(e.real, 7), round(e.imag, 7)) for e in evd]
+allok &= ok(Kd == 6 and len(set(rounded)) < m,
+            f'rem:degencyc: C_10(1,2) has K={Kd} with a repeated orbit eigenvalue (degenerate)')
+
+# ---- rem:counterscan: Z_4 x Z_4 has no counterexample ----
+try:
+    from schur import closures as _cl, _conv_table as _ct
+    tabs44 = _ct((4, 4))
+    els44 = tabs44[0]
+    neg44 = tabs44[3]
+    inv44 = [i2 for i2 in range(1, 16) if int(neg44[i2]) == i2]
+    prs44 = []
+    seen44 = set()
+    for i2 in range(1, 16):
+        if i2 in seen44: continue
+        j2 = int(neg44[i2])
+        if j2 != i2: seen44.update({i2, j2}); prs44.append((i2, j2))
+    n44 = tested44 = fails44 = 0
+    for mask in range(1, 2 ** (len(inv44) + len(prs44))):
+        mem = [inv44[b] for b in range(len(inv44)) if mask >> b & 1]
+        for b, (i2, j2) in enumerate(prs44):
+            if mask >> (len(inv44) + b) & 1: mem += [i2, j2]
+        if len(mem) < 2: continue
+        seenset = {0}; frontier = list(mem)
+        while frontier:
+            nxt = []
+            for a2 in frontier:
+                for mm in mem:
+                    bb = int(tabs44[2][a2, mm])
+                    if bb not in seenset: seenset.add(bb); nxt.append(bb)
+            frontier = nxt
+        if len(seenset) != 16: continue
+        tested44 += 1
+        co, ts44 = _cl((4, 4), [els44[i2] for i2 in mem], add_tables=tabs44)
+        if ts44.max() < co.max(): fails44 += 1
+    allok &= ok(tested44 == 432 and fails44 == 0,
+                f'rem:counterscan: Z_4 x Z_4 has {tested44} connected instances, {fails44} counterexamples')
+except Exception as e:
+    print(f'*** FAIL  Z_4 x Z_4 scan raised {e}'); allok = False
+
 print('\nALL CHECKS PASSED' if allok else '\n*** SOME CHECKS FAILED')
 sys.exit(0 if allok else 1)
