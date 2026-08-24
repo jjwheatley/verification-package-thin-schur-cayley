@@ -490,5 +490,23 @@ try:
 except Exception as e:
     print(f'*** FAIL  Z_4 x Z_4 scan raised {e}'); allok = False
 
+# ---- lem:orient parenthetical: AJ at level 1 on irregular closures ----
+def _ajsep(Am):
+    nn=Am.shape[0]; c=wl2(Am)
+    if (c==c.T).all(): return None
+    Jm=np.ones((nn,nn),dtype=np.int64); AJ=Am@Jm; JA=Jm@Am
+    prs=[(x,y) for x in range(nn) for y in range(nn) if c[x,y]!=c[y,x]]
+    good=sum(1 for x,y in prs if AJ[x,y]!=AJ[y,x] or JA[x,y]!=JA[y,x])
+    return good,len(prs)
+P3=np.array([[0,1,1],[1,0,0],[1,0,0]],dtype=np.int64)
+r_p3=_ajsep(P3)
+r_k4=_ajsep(cfi(list(nx.complete_graph(4).edges()),4)[0])
+r_k33=_ajsep(cfi(list(nx.complete_bipartite_graph(3,3).edges()),6)[0])
+r_pr=_ajsep(cfi(list(nx.circular_ladder_graph(3).edges()),6)[0])
+allok &= ok(r_p3[0]==r_p3[1] and r_k4[0]==r_k4[1] and r_k33[0]==r_k33[1]
+            and r_pr==(864,1008),
+            f'lem:orient: AJ separates all transpose pairs on P3, CFI(K4), CFI(K33); '
+            f'{r_pr[0]} of {r_pr[1]} on CFI(prism)')
+
 print('\nALL CHECKS PASSED' if allok else '\n*** SOME CHECKS FAILED')
 sys.exit(0 if allok else 1)

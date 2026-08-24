@@ -63,6 +63,8 @@ fails. A successful run ends with `ALL CHECKS PASSED`.
   distinct and the Vandermonde system inverts for t = 3 classes.
 - **The minimal degenerate cyclotomic witness** C_10(1,2).
 - **Z_4 x Z_4**: all 432 connected instances satisfy the identity.
+- **lem:orient parenthetical**: AJ separates every transpose pair on P3 and on
+  the CFI closures over K4 and K3,3, but only 864 of 1008 on the prism closure.
 - **The smallest across-layer instances**: K_4 = C_4(1,2), and the smallest
   non-complete ones C_6(1,3) = K_{3,3} and C_6(1,2).
 - **cor:lower is vacuous on abelian Cayley graphs**: every coherent class is
