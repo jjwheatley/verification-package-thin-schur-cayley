@@ -508,5 +508,156 @@ allok &= ok(r_p3[0]==r_p3[1] and r_k4[0]==r_k4[1] and r_k33[0]==r_k33[1]
             f'lem:orient: AJ separates all transpose pairs on P3, CFI(K4), CFI(K33); '
             f'{r_pr[0]} of {r_pr[1]} on CFI(prism)')
 
+# ---- alternation depth of prime cycles (walk separation is not level 1) ----
+def _delta_cycle(m):
+    from schur import _conv_table as _ct
+    tb=_ct((m,)); el=tb[0]; ix={e:i for i,e in enumerate(el)}; ad=tb[2]
+    Sc={(1,), ((-1) % m,)}
+    lb=np.full(m,2,dtype=np.int64)
+    for e in Sc: lb[ix[e]]=1
+    lb[0]=0; dd=0
+    while True:
+        cc={}
+        for i2 in range(m): cc.setdefault(int(lb[i2]),[]).append(i2)
+        ft=[lb.copy()]
+        for kk,mm in cc.items():
+            if 0 not in mm and all(el[i2] in Sc for i2 in mm):
+                for kk2,mm2 in cc.items():
+                    vv=np.zeros(m,dtype=np.int64)
+                    for a2 in mm:
+                        for b2 in mm2: vv[int(ad[a2,b2])]+=1
+                    ft.append(vv)
+        _,nw=np.unique(np.stack(ft,1),axis=0,return_inverse=True)
+        if len(set(nw.tolist()))==len(cc): return dd
+        lb=nw; dd+=1
+_ds={p:_delta_cycle(p) for p in (11,13,17,19,23)}
+allok &= ok(_ds=={11:3,13:4,17:6,19:7,23:9},
+            f'alternation depth of prime cycles {_ds}: walk separation is not a level-1 phenomenon')
+
+# ---- Bannai-Muzychuk: Sch(V) matrix-closed while |Lambda| != |Delta| ----
+_A24=np.zeros((24,24),dtype=np.int64)
+for i2 in range(24):
+    for sc in (1,5,19,23): _A24[i2,(i2+sc)%24]=1
+_g24=wl2(_A24)
+from certificates import _rref_add as _rr, P1 as _PP
+def _grpalg(gen,mm):
+    bas=[]; vs=[]
+    def _ad(v):
+        vv=np.array([int(x)%_PP for x in v],dtype=np.int64)
+        if _rr(bas,vv,_PP): vs.append(v); return True
+        return False
+    e0=np.zeros(mm,dtype=object); e0[0]=1; _ad(e0)
+    for G in gen: _ad(G)
+    i3=0
+    while i3<len(vs):
+        x=vs[i3]; i3+=1
+        for G in gen:
+            w=np.zeros(mm,dtype=object)
+            for a3 in range(mm):
+                if x[a3]:
+                    for b3 in range(mm):
+                        if G[b3]: w[(a3+b3)%mm]+=x[a3]*G[b3]
+            _ad(w)
+    return vs
+_Av=np.array([1 if y2 in {1,5,19,23} else 0 for y2 in range(24)],dtype=object)
+_vs=_grpalg([_Av],24)
+_pf={}
+for y2 in range(24): _pf.setdefault(tuple(int(v[y2]) for v in _vs),[]).append(y2)
+allok &= ok(len(_vs)==7 and len(_pf)==int(_g24.max())+1==9,
+            f'C24(1,5): dim V={len(_vs)}, dim Sch(V)={len(_pf)}=K, so Sch(V) is matrix-closed '
+            'while the BM cardinality condition fails')
+
+# ---- prop:strictinc: Sch(L) is strictly smaller than AS on the CFI witnesses ----
+def _dims(Am):
+    nn=Am.shape[0]; gg=wl2(Am); ll=ts_partition(Am)
+    KK=int(gg.max())+1; dA=int(ll.max())+1
+    AI=((Am+np.eye(nn,dtype=np.int64))>0)
+    loc=[]
+    for c2 in range(dA):
+        M=(ll==c2).astype(np.int64)
+        if ((M!=0)<=AI).all() and M.any(): loc.append(M)
+    def _alg(p):
+        bas=[]; vs=[]
+        def _ad(M):
+            v=(M.reshape(-1)%p).astype(np.int64)
+            if _rref_add(bas,v,p): vs.append(M); return True
+            return False
+        _ad(np.eye(nn,dtype=np.int64))
+        for G in loc: _ad(G)
+        i3=0
+        while i3<len(vs):
+            X=vs[i3]; i3+=1
+            for G in loc: _ad((X@G)%p); _ad((G@X)%p)
+        return vs
+    V1=_alg(P1); V2=_alg(P2)
+    assert len(V1)==len(V2)
+    pr={}
+    for x2 in range(nn):
+        for y2 in range(nn):
+            pr.setdefault(tuple(int(M[x2,y2])%P1 for M in V1),[]).append((x2,y2))
+    return KK,dA,len(pr),len(V1)
+_exp={34:(120,119,117,114),38:(156,155,151,148),42:(97,96,94,92)}
+_got={}
+for _n,_bt in BASES.items():
+    E2,nv2 = _bt[0],_bt[1]
+    Ax,_=cfi(E2,nv2); _got[_n]=_dims(Ax)
+Qx,_=cfi(list(nx.convert_node_labels_to_integers(nx.hypercube_graph(3)).edges()),8)
+_q=_dims(Qx)
+allok &= ok(_got==_exp and _q==(20,20,20,14),
+            f'prop:strictinc: (K,dimAS,dimSch(L),dimL) = {_got}, Q_3 {_q}; inclusion strict on all three')
+
+# ---- deposited prop:general certificates are self-consistent ----
+import json as _json, os as _os
+_cd=_os.path.join(_os.path.dirname(_os.path.abspath(__file__)),'outputs','certificates')
+_certok=True; _summ=[]
+for _nn in (34,38,42):
+    _p=_os.path.join(_cd,'cfi_%d.json'%_nn)
+    if not _os.path.exists(_p): _certok=False; _summ.append('%d:missing'%_nn); continue
+    _r=_json.load(open(_p))
+    Ax,_=cfi(_r['base_edges'],_r['base_vertices'])
+    gx=wl2(Ax); lx=ts_partition(Ax)
+    good=(Ax.shape[0]==_r['n'] and int(gx.max())+1==_r['K']
+          and int(lx.max())+1==_r['dim_AS']
+          and _r['licensed_products_block_constant'] and _r['transpose_closed']
+          and _r['contains_I_A_J'] and _r['structure_constant_violations']>0
+          and _r['fused_blocks']==_r['K']-1)
+    _certok &= good
+    _summ.append('%d:%s'%(_nn,'ok' if good else 'BAD'))
+allok &= ok(_certok, 'prop:general certificates deposited and consistent (%s)'%', '.join(_summ))
+
+# ---- rem:cycscope: how much of the prime-power range thm:cyc covers ----
+from math import gcd as _gcd2
+def _scope(mm):
+    zz=np.exp(2j*np.pi/mm); tot=cy=cn=0; degen=[]
+    half=list(range(1,mm//2+1))
+    for r2 in range(1,len(half)+1):
+        for gg in itertools.combinations(half,r2):
+            Sx=sorted({g2%mm for g2 in gg}|{(-g2)%mm for g2 in gg})
+            Ax=np.zeros((mm,mm),dtype=np.int64)
+            for i2 in range(mm):
+                for sc in Sx: Ax[i2,(i2+sc)%mm]=1
+            if not nx.is_connected(nx.from_numpy_array(Ax)): continue
+            Hx={t for t in range(1,mm) if _gcd2(t,mm)==1 and {(t*sc)%mm for sc in Sx}==set(Sx)}
+            sn=set(); ob=[]
+            for x2 in range(1,mm):
+                if x2 in sn: continue
+                o2=sorted({(x2*h2)%mm for h2 in Hx}); ob.append(o2); sn|=set(o2)
+            Kx=int(wl2(Ax).max())+1
+            tot+=1
+            if Kx==len(ob)+1:
+                cy+=1
+                lm=[complex(round(sum(zz**((o2[0]*sc)%mm) for sc in Sx).real,7),
+                            round(sum(zz**((o2[0]*sc)%mm) for sc in Sx).imag,7)) for o2 in ob]
+                if len(set(lm))==len(lm): cn+=1
+                else: degen.append(tuple(Sx))
+    return tot,cy,cn,degen
+_T=_C=_N=0; _dg=[]
+for _m in (4,8,9,16,25,27):
+    a,b,c,d=_scope(_m); _T+=a; _C+=b; _N+=c
+    if _m==16: _dg=d
+allok &= ok(_T==12536 and _C==12454 and _N==10570 and (1,3,13,15) in _dg,
+            f'rem:cycscope: {_T} connected prime-power circulants, {_C} cyclotomic, '
+            f'{_N} also non-degenerate; C_16(1,3,13,15) is cyclotomic but degenerate')
+
 print('\nALL CHECKS PASSED' if allok else '\n*** SOME CHECKS FAILED')
 sys.exit(0 if allok else 1)

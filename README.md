@@ -63,6 +63,19 @@ fails. A successful run ends with `ALL CHECKS PASSED`.
   distinct and the Vandermonde system inverts for t = 3 classes.
 - **The minimal degenerate cyclotomic witness** C_10(1,2).
 - **Z_4 x Z_4**: all 432 connected instances satisfy the identity.
+- **Alternation depth of prime cycles** (11, 13, 17, 19, 23): 3, 4, 6, 7, 9 —
+  walk separation is not a level-1 phenomenon.
+- **The Bannai-Muzychuk cardinality condition** is not equivalent to matrix
+  closure of Sch(V): on C24(1,5), Sch(V) = Coh(A) is matrix-closed while
+  dim V = 7 and |Lambda| = 9.
+- **Strictness of Sch(L) contained in AS** (prop:strictinc): (K, dim AS,
+  dim Sch(L), dim L) = (120,119,117,114), (156,155,151,148), (97,96,94,92) on
+  the three CFI witnesses, and (20,20,20,14) on the Q_3 closure.
+- **Scope of thm:cyc** (rem:cycscope): of 12,536 connected circulants of
+  prime-power order n in {4,8,9,16,25,27}, 12,454 have cyclotomic closure and
+  10,570 of those are non-degenerate.
+- **The prop:general certificates**, deposited under `outputs/certificates/`,
+  are re-derived and checked against the graphs.
 - **lem:orient parenthetical**: AJ separates every transpose pair on P3 and on
   the CFI closures over K4 and K3,3, but only 864 of 1008 on the prism closure.
 - **The smallest across-layer instances**: K_4 = C_4(1,2), and the smallest
@@ -81,6 +94,9 @@ The two exhaustive computations are recorded under `outputs/`, so the counts
 can be checked without rerunning them. Each JSON records, per group, the
 number of connected instances tested and every failure found.
 
+- `outputs/certificates/` — the fused partitions, licensed products and
+  structure-constant failures for the three Cai-Furer-Immerman witnesses of
+  prop:general, which are too large to print in the paper.
 - `outputs/minimality/` — all 45 abelian groups of order below 32, summing to
   259,473 connected instances with no failures.
 - `outputs/census/` — Z4 x Z8 alone, summing to 129,600 connected instances
